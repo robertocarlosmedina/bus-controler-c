@@ -8,9 +8,9 @@
 struct paragem{
     char * nome;//nome
     int tempo;//tempo demorado para chegar nessa paragem
-    struct paragem *next;//Ponteiro para proxima paragem
-    struct paragem *prev;//Ponteiro para paragem anterior
-};
+    struct paragem * next;//Ponteiro para proxima paragem
+    struct paragem * prev;//Ponteiro para paragem anterior
+}*head, *last;
 
 // Uma struct do tipo pessoa para formar uma lista de pessoas á entrar e sair do autocarro
 struct pessoa{
@@ -30,17 +30,33 @@ struct relatorio{
 
 
 // Funcao do tipo paragem, que permite a entrada de novas paragens de acordo como a locacao de memoria 
-struct paragem *entra_paragem(char *nome, int tempoChegada){
+struct paragem *entra_paragem(char *nome, int tempoChegada, int n){
     struct paragem *loc;//ponteiro que referencia paragem 
     loc = (struct paragem*)malloc(sizeof(struct paragem));// aloca espaço na memoria
+    head = (struct paragem*)malloc(sizeof(struct paragem));// aloca espaço na memoria
     if(loc == NULL){// verificar se o espaço foi alocado ou nao 
         printf("Erro de alocação.\nFim de execução\n");
         exit(1);
     };
-    loc->nome = nome;
-    loc->tempo = tempoChegada;
-    loc->next = NULL;
-    loc->prev = NULL;
+    if (n==0){
+        head->nome = nome;
+        head->tempo = tempoChegada;
+        head->next = NULL;
+        head->prev = NULL;
+
+        last = head;
+    }
+    else{
+        loc->nome = nome;
+        loc->tempo = tempoChegada;
+        loc->prev = last;
+        loc->next = NULL;
+        
+
+        last->next = loc;
+        last = loc;
+    }
+    
 }
 
 // Funcao do tipo pessoa, que permite a entrada de pessoas para a lista, defenindo o seu tempo de
@@ -75,6 +91,7 @@ struct relatorio *eleboracao_doc(char *nomeConduct, int totalPessoas, int tempoT
 int introPainelMenu(){
     int esc;
     system("cls");
+    system("clear");
     printf("\n                    Gestão de trafico de autocarros");
     printf("\n\t");
     printf("\n  Escolha uma das funcionalidades do sistema que pretende realizar: ");
@@ -114,11 +131,67 @@ bool controloServico(bool state){
     return true;
 }
 
+void listarParagems(struct paragem * loc, int n_proc ){
+    int tempo; char * nome;
+    struct paragem *control ;
+    control = loc;
+
+    while(control != NULL){
+        printf("%d, %s\n", control->tempo, control->nome);
+        control = control -> next;
+    }
+}
+void listarParagems1(struct paragem * loc, int n_proc ){
+    int tempo; char * nome;
+    struct paragem *control ;
+    control = loc;
+
+    while(control != NULL){
+        printf("%d, %s\n", control->tempo, control->nome);
+        control = control -> next;
+    }
+    // prev<-control;
+    // while(control != NULL){
+    //     printf("%d, %s\n", control->tempo, control->nome);
+    //     control = control <- prev;
+    // }
+}
+
+void reverseList(struct paragem *loc){
+
+    struct paragem *current, *temp;
+    
+    // current = loc;
+
+    current = head;
+    while(current != NULL)
+    {
+        /*
+         * Swap the previous and next address fields of current node
+         */
+        temp = current->next;
+        current->next = current->prev;
+        current->prev = temp;
+
+        /* Move the current pointer to next node which is stored in temp */
+        current = temp;
+    }
+    
+    /* 
+     * Swap the head and last pointers
+     */
+    temp = head;
+    head = last;
+    last = temp;
+    // printf("dd");
+}
+
 int main(){
     int esc;
     char *paragensAPriori[10];
+    int nrParagems = 5;
     char *nameDriver="Artur Fonseca";
-    struct paragem *paragem_proc;
+    struct paragem *paragem_proc, *auxiliar;
     bool state=false;//variavel de controlo do estado ativo ou nao do serviço
     srand(time(NULL));   // Só deve ser chamada uma única vez
 
@@ -126,16 +199,23 @@ int main(){
     paragensAPriori[0]="Cruz"; paragensAPriori[1]="Mederalzinho";paragensAPriori[2]="T Alecrin";
     paragensAPriori[3]="Lajinha";paragensAPriori[4]="Praça Estrela"; paragensAPriori[5]="Praça Regala";
 
-    for (int i; i<= 10; i++){
+    // colocando as paragems ja pre estabelecidas no lista de paragems
+    for (int i=0; i<= nrParagems; i++){
         if (paragensAPriori[i]!= NULL){
             if (i==0){
-                paragem_proc = entra_paragem(paragensAPriori[i],busRandomTimeGenerator());
+                paragem_proc = entra_paragem(paragensAPriori[i],busRandomTimeGenerator(), i);
             }
-            else if(i>0 && i < 5){
-                paragem_proc->prev = entra_paragem(paragensAPriori[i],busRandomTimeGenerator());
+            else if (i==1){
+                paragem_proc ->next = entra_paragem(paragensAPriori[i],busRandomTimeGenerator(), i);
+                auxiliar = paragem_proc->next;
+            }
+            else if(i==nrParagems-1){
+                auxiliar->next = entra_paragem(paragensAPriori[i],busRandomTimeGenerator(), i);
             }
             else{
-                paragem_proc = entra_paragem(paragensAPriori[i],busRandomTimeGenerator());
+                auxiliar-> next= entra_paragem(paragensAPriori[i],busRandomTimeGenerator(), i);
+                auxiliar=auxiliar->next;
+
             }
 
         }
@@ -159,6 +239,10 @@ int main(){
                 printf("%d", esc);
                 state = controloServico(state);
                 printf("\n\tO dia de serviço foi terminado.\n\n");
+                listarParagems(paragem_proc, 4);
+                reverseList(paragem_proc); 
+                listarParagems(paragem_proc, 4);
+
                 pauseMenuControl();
                 break;
 
