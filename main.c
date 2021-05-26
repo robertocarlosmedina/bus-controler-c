@@ -188,7 +188,7 @@ void reverseList(struct paragem *loc){
 
 int main(){
     int esc;
-    char *paragensAPriori[10];
+    char paragensAPriori[10];
     int nrParagems = 5;
     char *nameDriver="Artur Fonseca";
     struct paragem *paragem_proc, *auxiliar;
