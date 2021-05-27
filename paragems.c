@@ -84,12 +84,15 @@ void criarListaParagems()
 {
     int i;
     struct paragem *newNode;
-    char paragensAPriori[3][20];
+    char paragensAPriori[10][20];
     stpcpy(paragensAPriori[0], "Cruz");
     stpcpy(paragensAPriori[1], "Lajinha");
     stpcpy(paragensAPriori[2], "Mederalzinho");
     stpcpy(paragensAPriori[3], "Regala");
-    stpcpy(paragensAPriori[3], "Estrela");
+    stpcpy(paragensAPriori[4], "Estrela");
+    stpcpy(paragensAPriori[5], "Estrela");
+    stpcpy(paragensAPriori[6], "Estrela");
+    int nrparagems=6;
 
     /*
      * Criar um link no nó head
@@ -105,7 +108,8 @@ void criarListaParagems()
      * Criar e linkar o resto dos n-1 nós
      */
     
-    for(i=1; i<=3; i++)
+    for(i=1; i<=nrparagems; i++)
+
     {   
         newNode = (struct paragem *)malloc(sizeof(struct paragem));
         newNode->data=10 + rand()%10;
@@ -115,6 +119,7 @@ void criarListaParagems()
         newNode->next = NULL;
         last->next = newNode; // Linkar o nó anterior como novo nó
         last = newNode; // Fazer com que o novo nó seja o ultimo/anterior nó
+        
     }
     // printf("\nLista criada\n");
 }

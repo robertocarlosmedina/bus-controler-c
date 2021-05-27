@@ -60,7 +60,8 @@ struct paragem {
     struct paragem * next;
 }*head, *last;
 
-char paragensAPriori[3][20];
+char paragensAPriori[20][30];
+int nrparagems=5;
 
 /*
  * assinatura das funções a serem utilizadas para a listas de paragems
@@ -83,7 +84,7 @@ void fazerDiaServico();
 void inicializandoDados();
 
 int main(){
-    int esc=0;
+    int esc=0,i;
 
     head = NULL;
     last = NULL;
@@ -115,7 +116,9 @@ int main(){
                 break;
 
             case 4:
-                verificarFimDia();
+                for(i=0;i<=SIZE+top;i++){
+                    int data = verificarFimDia();
+                }
                 pauseMenuControl();
                 break;
 
@@ -140,8 +143,9 @@ void inicializandoDados(){
     stpcpy(paragensAPriori[0], "Cruz");
     stpcpy(paragensAPriori[1], "Lajinha");
     stpcpy(paragensAPriori[2], "Mederalzinho");
-    stpcpy(paragensAPriori[3], "Campim");
+    stpcpy(paragensAPriori[3], "Praca");
     stpcpy(paragensAPriori[4], "Estrela");
+    stpcpy(paragensAPriori[5], "Estrela");
     criarListaParagems();
 }
 // Menu de apresentação
@@ -165,7 +169,7 @@ int introPainelMenu(){
 }
 void fazerDiaServico(){
     struct paragem * temp;
-    int n = 1, volta=0;
+    int n = 1, volta=0, i, f;
     int pessoasTransportadas=0;
 
     int ch, id,nrPessoasEntrada, nrPessoasSaida;
@@ -175,14 +179,14 @@ void fazerDiaServico(){
     primeiro = NULL;
 
 
-    for(int i=0; i<=4;i++){
-        while(volta>2){
+    for(i=0; i<=4;i++){
+        for(volta = 0;volta<2;volta++){
             temp = head;
             while(temp != NULL){
                 // printf("\nParagem número: %d, Localização: %s, tempo: %d ", n, temp->name, temp->data);
                 if (!estaCheia()){
                     nrPessoasEntrada = 0 + rand()%(CAPACIDADE-nrPessoasAutocarro);                
-                    for(i=0; i<nrPessoasEntrada; i++){
+                    for(f=0; f<nrPessoasEntrada; f++){
                         entradaFila(&ultimo, &primeiro, nrPessoasAutocarro+1);
                         // printf("added\n");
                     }
@@ -190,7 +194,7 @@ void fazerDiaServico(){
                 }
                 if(!estaVazia()){
                     nrPessoasSaida = 0 + rand()%(nrPessoasAutocarro);  
-                    for(i=0; i<nrPessoasSaida; i++){
+                    for(f=0; f<nrPessoasSaida; f++){
                         saidaFila(&primeiro);
                         // printf("removed\n");
                     }
@@ -199,11 +203,7 @@ void fazerDiaServico(){
                 /* Mover o ponteiro para o proximo nó */
                 temp = temp->next;
             }
-            volta++;
-            reverterLista();
         }
-        volta = 0;
-        reverterLista();
         colocarElemento(pessoasTransportadas, condutores[i],pessoasTransportadas*6);
         pessoasTransportadas = 0;
     }
@@ -247,7 +247,7 @@ void colocarElemento(int pessoasTrans, char * nomeCondu, int duracao)
 int verificarFimDia()
 
 {
-    int i=0, menorTempo=0, maisTranspor=0;
+    int i=0, menorTempo=stack[0].duracao, maisTranspor=0;
     char conduMenorTempo[30], conduMaisTranspor[30];
 
     // verificar se a pilha se encontra vazia.
@@ -258,7 +258,7 @@ int verificarFimDia()
     if (!visto){
         printf("\n\tTodos os condutores:\n\n");
         for(;i<=top;i++){
-            if (stack[i].duracao>menorTempo){
+            if (stack[i].duracao<menorTempo){
                 stpcpy(conduMenorTempo, stack[i].nomeCondutor);
                 menorTempo=stack[i].duracao;
             }
@@ -381,7 +381,7 @@ void criarListaParagems()
      * Criar e linkar o resto dos n-1 nós
      */
     
-    for(i=1; i<=3; i++)
+    for(i=1; i<=nrparagems; i++)
     {   
         newNode = (struct paragem *)malloc(sizeof(struct paragem));
         newNode->data=10 + rand()%10;
@@ -412,7 +412,7 @@ void adicionarParagem()
     newNode->next = NULL;
     last->next = newNode; // Linkar o nó anterior como novo nó
     last = newNode; // Fazer com que o novo nó seja o ultimo/anterior nó
-
+    nrparagems++;
     printf("\nParagem Adicionada com sucesso.\n");
 
 }
