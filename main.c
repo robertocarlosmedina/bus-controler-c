@@ -80,11 +80,16 @@ char condutores[4][30];
 // assinatura de todos os metedos auxiliares do programa
 int introPainelMenu();
 void pauseMenuControl();
-void fazerDiaServico();
+void fazerDiaServico(Fila ** ultimo, Fila ** primeiro);
 void inicializandoDados();
 
 int main(){
     int esc=0,i;
+    
+    Fila *ultimo, *primeiro;
+
+    ultimo  = NULL;
+    primeiro = NULL;
 
     head = NULL;
     last = NULL;
@@ -101,7 +106,7 @@ int main(){
 
             case 1:
                 printf("\nServiço inicializado.\n");
-                fazerDiaServico();
+                fazerDiaServico(ultimo, primeiro);
                 pauseMenuControl();
                 break;
 
@@ -167,23 +172,22 @@ int introPainelMenu(){
 
     return esc;
 }
-void fazerDiaServico(){
+
+void fazerDiaServico(Fila ** ultimo, Fila ** primeiro){
     struct paragem * temp;
+    
     int n = 1, volta=0, i, f;
     int pessoasTransportadas=0;
 
     int ch, id,nrPessoasEntrada, nrPessoasSaida;
-    Fila *ultimo, *primeiro;
-
-    ultimo  = NULL;
-    primeiro = NULL;
-
-
     for(i=0; i<=4;i++){
         for(volta = 0;volta<2;volta++){
             temp = head;
+            
+
             while(temp != NULL){
                 // printf("\nParagem número: %d, Localização: %s, tempo: %d ", n, temp->name, temp->data);
+
                 if (!estaCheia()){
                     nrPessoasEntrada = 0 + rand()%(CAPACIDADE-nrPessoasAutocarro);                
                     for(f=0; f<nrPessoasEntrada; f++){
@@ -204,6 +208,7 @@ void fazerDiaServico(){
                 temp = temp->next;
             }
         }
+        printf("2\n");
         colocarElemento(pessoasTransportadas, condutores[i],pessoasTransportadas*6);
         pessoasTransportadas = 0;
     }
@@ -229,10 +234,10 @@ void colocarElemento(int pessoasTrans, char * nomeCondu, int duracao)
         return;
     }
 
-    // Increase element count in stack
+    // Icrementar  a posição do elemento de top
     top++;
 
-    // Push element in stack
+    // Colocar um elemento na pilha
     stack[top].totalTranspor = pessoasTrans;
     strcpy(stack[top].nomeCondutor, nomeCondu);
     stack[top].duracao = duracao;
@@ -368,7 +373,7 @@ void criarListaParagems()
     
 
     /*
-     * Criar um link no nó head
+     * Criar um link no nó a frente
      */
     head = (struct paragem *)malloc(sizeof(struct paragem));
     head->data =10 + rand()%10;
