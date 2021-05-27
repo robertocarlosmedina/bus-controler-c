@@ -1,9 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <limits.h>     // For INT_MIN
+#include <stdbool.h>
+#include <limits.h>     // para INT_MIN
 
-#define SIZE 100
+#define SIZE 50
 
 
 typedef struct relatorio{
@@ -15,19 +16,21 @@ typedef struct relatorio{
 
 // criar uma pilha com capacidade para 100 elementos
 relatorio stack[SIZE];
+unsigned visto=false;
 
-// Initially stack is empty 
+// inicializando a pilha vazia
 int top = -1;
 
 
-/* Function declaration to perform push and pop on stack */
-void push(int pessoasTrans, char * nomeCondu, int duracao);
-int  pop();
+/* funções a serem utilizadas pera os relatórios */
+void colocarElemento(int pessoasTrans, char * nomeCondu, int duracao);
+int  verificarFimDia();
 
 
 int main()
 {
-    int choice, data;
+    int choice, data, i;
+
 
     while(1)
     {
@@ -37,7 +40,6 @@ int main()
         printf("------------------------------------\n");
         printf("1. Push\n");
         printf("2. Pop\n");
-        printf("3. Size\n");
         printf("------------------------------------\n");
         printf("Enter your choice: ");
 
@@ -49,25 +51,14 @@ int main()
                 printf("Enter data to push into stack: ");
                 scanf("%d", &data);
                 
-                // Push element to stack
-                push(data, "José ne", 20);
+                // colocar elementos na pilha
+                colocarElemento(data, "José ne", 20);
                 break;
 
             case 2: 
-                data = pop();
-
-                // If stack is not empty
-                if (data != INT_MIN)
-                    printf("Data => %d\n", data);
-                break;
-
-            case 3: 
-                printf("Stack size: %d\n", top + 1);
-                break;
-
-            case 4: 
-                printf("Exiting from app.\n");
-                exit(0);
+                for(i=0;i<=SIZE+top;i++){
+                    data = verificarFimDia();
+                }
                 break;
 
             default: 
@@ -84,14 +75,14 @@ int main()
 
 
 /**
- * Functiont to push a new element in stack.
+ * colocar elemento no topo da pilha
  */
-void push(int pessoasTrans, char * nomeCondu, int duracao)
+void colocarElemento(int pessoasTrans, char * nomeCondu, int duracao)
 {
-    // Check stack overflow
+    // Verificar se a pilha ja esta cheia
     if (top >= SIZE)
     {
-        printf("Stack Overflow, can't add more element element to stack.\n");
+        printf("\nALERTA: Pilha de relatórios se encontra cheia.\n");
         return;
     }
 
@@ -103,38 +94,46 @@ void push(int pessoasTrans, char * nomeCondu, int duracao)
     strcpy(stack[top].nomeCondutor, nomeCondu);
     stack[top].duracao = duracao;
 
-    printf("Data pushed to stack.\n");
+    // printf("dados colocados na pilha\n");
 }
 
 
 /**
- * Function to pop element from top of stack.
+ * Ver os relatórios e esvaziar a pilha.
  */
-int pop()
+int verificarFimDia()
 {
     int i=0, menorTempo=0, maisTranspor=0;
     char conduMenorTempo[30], conduMaisTranspor[30];
 
-    // Check stack underflow
+    // verificar se a pilha se encontra vazia.
     if (top < 0)
     {
-        printf("Stack is empty.\n");
-
-        // Throw empty stack error/exception
-        // Since C does not have concept of exception
-        // Hence return minimum integer value as error value
-        // Later in code check if return value is INT_MIN, then
-        // stack is empty
         return INT_MIN;
     }
 
 
-    // Return stack top and decrease element count in stack
-    for(;i<=top;i++){
-        if (stack[top].duracao>menorTempo){
-            stpcpy(conduMenorTempo, stack[top].nomeCondutor)
+    if (!visto){
+        printf("\n\tTodos os condutores:\n\n");
+        for(;i<=top;i++){
+            if (stack[i].duracao>menorTempo){
+                stpcpy(conduMenorTempo, stack[i].nomeCondutor);
+                menorTempo=stack[i].duracao;
+            }
+            if (stack[i].totalTranspor>maisTranspor){
+                stpcpy(conduMaisTranspor, stack[i].nomeCondutor);
+                maisTranspor=stack[i].totalTranspor;
+            }
+            printf("Condutor: %s, tempo: %d, pessoasTrans: %d\n", stack[i].nomeCondutor, stack[i].duracao, stack[i].totalTranspor);
         }
-        printf("condutor: %s, tempo: %d, pessoasTrans: %d\n", stack[top].nomeCondutor, stack[top].duracao, stack[top].totalTranspor);
+        printf("\n\tDestaques do dia: \n");
+        printf("\nCondutor que fez menos tempo: %s, tempo de: %d: ", conduMenorTempo, menorTempo);
+        printf("\nCondutor que Transportou mais pessoas: %s, numero pessoas: %d: ", conduMaisTranspor, maisTranspor);
+        printf("\nNumero voltas feitas pelo autocarro: %i", i);
+        visto = true;
     }
+    
+    
+    // returnar o valor de topo da pilha decrementa o top eliminando o elemento de top
     return stack[top--].totalTranspor;
 }
